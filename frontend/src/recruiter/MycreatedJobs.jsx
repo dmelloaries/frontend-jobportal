@@ -7,9 +7,11 @@ const MyCreatedJobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingApplicants, setLoadingApplicants] = useState(false); // New state for applicants loading
   const [error, setError] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentApplicant, setCurrentApplicant] = useState(null);
+  const [showContent, setShowContent] = useState(true); // Control visibility of jobs and messages
 
   // Fetch created jobs on component mount
   useEffect(() => {
@@ -44,7 +46,8 @@ const MyCreatedJobs = () => {
 
   // Fetch applicants for the selected job
   const fetchApplicants = async (jobId) => {
-    setLoading(true);
+    setLoadingApplicants(true); // Set loading state to true
+    setShowContent(false); // Hide job listings and messages
     const token = localStorage.getItem("jwtToken");
 
     try {
@@ -59,10 +62,10 @@ const MyCreatedJobs = () => {
 
       setApplicants(response.data.applicants);
       setSelectedJob(response.data.job);
-      setLoading(false);
+      setLoadingApplicants(false); // Reset loading state
     } catch (error) {
       setError("Failed to fetch applicants for the selected job.");
-      setLoading(false);
+      setLoadingApplicants(false); // Reset loading state
     }
   };
 
@@ -93,7 +96,8 @@ const MyCreatedJobs = () => {
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">My Created Jobs</h1>
-      {jobs.length > 0 ? (
+
+      {showContent && jobs.length > 0 ? (
         <ul className="space-y-4">
           {jobs.map((job) => (
             <li
@@ -112,49 +116,54 @@ const MyCreatedJobs = () => {
           ))}
         </ul>
       ) : (
-        <div>No jobs created yet.</div>
+        showContent && <div>No jobs created yet.</div>
       )}
 
-      {selectedJob && (
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold">
-            Applicants for {selectedJob.title}
-          </h2>
-          {applicants.length > 0 ? (
-            <ul className="space-y-4 mt-4">
-              {applicants.map((applicant) => (
-                <li
-                  key={applicant.id}
-                  className="border p-4 rounded-md shadow"
-                >
-                  <h3 className="text-xl font-semibold">{applicant.name}</h3>
-                  <p className="text-gray-600">{applicant.email}</p>
-                  <p className="text-gray-600">{applicant.bio}</p>
-                  <p className="text-gray-600">
-                    Skills: {applicant.skills.join(", ")}
-                  </p>
-                  <a
-                    href={applicant.resume}
-                    className="text-blue-500 hover:underline"
+      {loadingApplicants ? ( // Conditional rendering for loading applicants
+        <div className="text-center py-4">Loading applicants...</div>
+      ) : (
+        !showContent &&
+        selectedJob && (
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold">
+              Applicants for {selectedJob.title}
+            </h2>
+            {applicants.length > 0 ? (
+              <ul className="space-y-4 mt-4">
+                {applicants.map((applicant) => (
+                  <li
+                    key={applicant.id}
+                    className="border p-4 rounded-md shadow"
                   >
-                    View Resume ({applicant.resumeOriginalName})
-                  </a>
-                  <button
-                    className="ml-4 bg-blue-500 text-white p-2 rounded"
-                    onClick={() => {
-                      setCurrentApplicant(applicant);
-                      setIsDialogOpen(true);
-                    }}
-                  >
-                    Message
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div>No applicants for this job yet.</div>
-          )}
-        </div>
+                    <h3 className="text-xl font-semibold">{applicant.name}</h3>
+                    <p className="text-gray-600">{applicant.email}</p>
+                    <p className="text-gray-600">{applicant.bio}</p>
+                    <p className="text-gray-600">
+                      Skills: {applicant.skills.join(", ")}
+                    </p>
+                    <a
+                      href={applicant.resume}
+                      className="text-blue-500 hover:underline"
+                    >
+                      View Resume ({applicant.resumeOriginalName})
+                    </a>
+                    <button
+                      className="ml-4 bg-blue-500 text-white p-2 rounded"
+                      onClick={() => {
+                        setCurrentApplicant(applicant);
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      Message
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div>No applicants for this job yet.</div>
+            )}
+          </div>
+        )
       )}
 
       <MessageDialog
