@@ -5,12 +5,14 @@ const RecruiterSidebar = () => {
   const location = useLocation();
 
   const navItems = [
+    { path: "/", icon: "🏠", label: "My Created Jobs" },
+    { path: "/create", icon: "➕", label: "Create Job" },
     // { path: '/', icon: '🏠', label: 'Home' },
     // { path: '/profile', icon: '👤', label: 'Profile' },
     // { path: '/review', icon: '💼', label: 'Review' },
     // { path: '/applied', icon: '📝', label: 'Applied' },
-    { path: '/mycreatedjobs', icon: '💬', label: 'Messages' },
-    { path: '/create', icon: '🔍', label: 'Discover' },
+    { path: "/mycreatedjobs", icon: "💬", label: "Messages" },
+    { path: "/create", icon: "🔍", label: "Discover" },
   ];
 
   return (
