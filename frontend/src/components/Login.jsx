@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ApplicantSidebar from '../applicant/ApplicantSidebar';
+import RecruiterSidebar from '../recruiter/RecruiterSidebar';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    type: 'Applicant',
+    type: 'Applicant', // Default to Applicant
   });
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -32,7 +34,13 @@ const Login = () => {
         localStorage.setItem('jwtToken', data.token);
         alert('Login successful');
         console.log('JWT Token:', data.token);
-        navigate('/home'); // Redirect to /home
+
+        // Redirect based on user role selected in the formData.type
+        if (formData.type === 'Recruiter') {
+          navigate('/mycreatedjobs'); // Redirect to recruiter's page   i want RecruiterSidebar.jsx to be displayed
+        } else {
+          navigate('/'); // Redirect to applicant's home page
+        }
       } else {
         alert('Login failed');
         console.error(data);
