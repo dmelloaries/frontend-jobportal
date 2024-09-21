@@ -1,29 +1,37 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import MessageDialog from "./MessageDialog"; // Import the dialog component
+import MessageDialog from "./MessageDialog";
+import {
+  Briefcase,
+  Building,
+  MapPin,
+  DollarSign,
+  FileText,
+  ChevronLeft,
+  Loader,
+  Users,
+  Mail,
+} from "lucide-react";
 
 const MyCreatedJobs = () => {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loadingApplicants, setLoadingApplicants] = useState(false); // New state for applicants loading
+  const [loadingApplicants, setLoadingApplicants] = useState(false);
   const [error, setError] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentApplicant, setCurrentApplicant] = useState(null);
-  const [showContent, setShowContent] = useState(true); // Control visibility of jobs and messages
+  const [showContent, setShowContent] = useState(true);
 
-  // Fetch created jobs on component mount
   useEffect(() => {
     const fetchCreatedJobs = async () => {
       const token = localStorage.getItem("jwtToken");
-
       if (!token) {
         setError("No token found, please login.");
         setLoading(false);
         return;
       }
-
       try {
         const response = await axios.get(
           "http://localhost:3000/api/recruiter/mycreatedjobs",
@@ -40,16 +48,13 @@ const MyCreatedJobs = () => {
         setLoading(false);
       }
     };
-
     fetchCreatedJobs();
   }, []);
 
-  // Fetch applicants for the selected job
   const fetchApplicants = async (jobId) => {
-    setLoadingApplicants(true); // Set loading state to true
-    setShowContent(false); // Hide job listings and messages
+    setLoadingApplicants(true);
+    setShowContent(false);
     const token = localStorage.getItem("jwtToken");
-
     try {
       const response = await axios.get(
         `http://localhost:3000/api/recruiter/applicants/${jobId}`,
@@ -59,19 +64,17 @@ const MyCreatedJobs = () => {
           },
         }
       );
-
       setApplicants(response.data.applicants);
       setSelectedJob(response.data.job);
-      setLoadingApplicants(false); // Reset loading state
+      setLoadingApplicants(false);
     } catch (error) {
       setError("Failed to fetch applicants for the selected job.");
-      setLoadingApplicants(false); // Reset loading state
+      setLoadingApplicants(false);
     }
   };
 
   const handleSendMessage = async (applicantId, message) => {
     const token = localStorage.getItem("jwtToken");
-
     try {
       await axios.post(
         `http://localhost:3000/api/recruiter/message/${applicantId}`,
@@ -82,85 +85,151 @@ const MyCreatedJobs = () => {
           },
         }
       );
-      alert("Message sent successfully!"); // Simple feedback for the user
+      alert("Message sent successfully!");
     } catch (error) {
       alert("Failed to send message.");
     }
   };
 
-  // Render loading state
-  if (loading) return <div className="text-center py-4">Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader
+          className="animate-spin"
+          size={48}
+        />
+      </div>
+    );
   if (error)
     return <div className="text-center py-4 text-red-600">{error}</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">My Created Jobs</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">My Created Jobs</h1>
 
       {showContent && jobs.length > 0 ? (
         <ul className="space-y-4">
           {jobs.map((job) => (
             <li
               key={job.id}
-              className="border p-4 rounded-md shadow cursor-pointer hover:bg-gray-100"
+              className="border p-6 rounded-lg shadow-md cursor-pointer hover:bg-gray-50 transition duration-300"
               onClick={() => fetchApplicants(job.id)}
             >
-              <h2 className="text-xl font-semibold">{job.title}</h2>
-              <p className="text-gray-600">{job.companyname}</p>
-              <p className="text-gray-600">{job.location}</p>
-              <p className="text-gray-600">
-                Salary: ₹{job.salary.toLocaleString()}
-              </p>
-              <p className="mt-2">{job.description}</p>
+              <h2 className="text-2xl font-semibold text-blue-600 mb-2">
+                {job.title}
+              </h2>
+              <div className="flex items-center text-gray-600 mb-2">
+                <Building
+                  size={18}
+                  className="mr-2"
+                />
+                <span>{job.companyname}</span>
+              </div>
+              <div className="flex items-center text-gray-600 mb-2">
+                <MapPin
+                  size={18}
+                  className="mr-2"
+                />
+                <span>{job.location}</span>
+              </div>
+              <div className="flex items-center text-gray-600 mb-4">
+                <DollarSign
+                  size={18}
+                  className="mr-2"
+                />
+                <span>Salary: ₹{job.salary.toLocaleString()}</span>
+              </div>
+              <p className="text-gray-700">{job.description}</p>
             </li>
           ))}
         </ul>
       ) : (
-        showContent && <div>No jobs created yet.</div>
+        showContent && (
+          <div className="text-center text-gray-600">No jobs created yet.</div>
+        )
       )}
 
-      {loadingApplicants ? ( // Conditional rendering for loading applicants
-        <div className="text-center py-4">Loading applicants...</div>
+      {loadingApplicants ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader
+            className="animate-spin"
+            size={48}
+          />
+        </div>
       ) : (
         !showContent &&
         selectedJob && (
           <div className="mt-8">
-            <h2 className="text-2xl font-bold">
+            <button
+              onClick={() => setShowContent(true)}
+              className="mb-4 flex items-center text-blue-600 hover:text-blue-800 transition duration-300"
+            >
+              <ChevronLeft
+                size={20}
+                className="mr-1"
+              />
+              Back to Jobs
+            </button>
+            <h2 className="text-2xl font-bold mb-4">
               Applicants for {selectedJob.title}
             </h2>
             {applicants.length > 0 ? (
-              <ul className="space-y-4 mt-4">
+              <ul className="space-y-6">
                 {applicants.map((applicant) => (
                   <li
                     key={applicant.id}
-                    className="border p-4 rounded-md shadow"
+                    className="border p-6 rounded-lg shadow-md"
                   >
-                    <h3 className="text-xl font-semibold">{applicant.name}</h3>
-                    <p className="text-gray-600">{applicant.email}</p>
-                    <p className="text-gray-600">{applicant.bio}</p>
-                    <p className="text-gray-600">
-                      Skills: {applicant.skills.join(", ")}
-                    </p>
-                    <a
-                      href={applicant.resume}
-                      className="text-blue-500 hover:underline"
-                    >
-                      View Resume ({applicant.resumeOriginalName})
-                    </a>
-                    <button
-                      className="ml-4 bg-blue-500 text-white p-2 rounded"
-                      onClick={() => {
-                        setCurrentApplicant(applicant);
-                        setIsDialogOpen(true);
-                      }}
-                    >
-                      Message
-                    </button>
+                    <h3 className="text-xl font-semibold text-blue-600 mb-2">
+                      {applicant.name}
+                    </h3>
+                    <div className="flex items-center text-gray-600 mb-2">
+                      <Mail
+                        size={18}
+                        className="mr-2"
+                      />
+                      <span>{applicant.email}</span>
+                    </div>
+                    <p className="text-gray-700 mb-3">{applicant.bio}</p>
+                    <div className="flex items-center text-gray-600 mb-3">
+                      <Briefcase
+                        size={18}
+                        className="mr-2"
+                      />
+                      <span>Skills: {applicant.skills.join(", ")}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <a
+                        href={applicant.resume}
+                        className="text-blue-500 hover:text-blue-700 transition duration-300 flex items-center"
+                      >
+                        <FileText
+                          size={18}
+                          className="mr-2"
+                        />
+                        View Resume ({applicant.resumeOriginalName})
+                      </a>
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300 flex items-center"
+                        onClick={() => {
+                          setCurrentApplicant(applicant);
+                          setIsDialogOpen(true);
+                        }}
+                      >
+                        <Mail
+                          size={18}
+                          className="mr-2"
+                        />
+                        Message
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <div>No applicants for this job yet.</div>
+              <div className="text-center text-gray-600">
+                No applicants for this job yet.
+              </div>
             )}
           </div>
         )
