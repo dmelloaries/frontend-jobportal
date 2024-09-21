@@ -9,6 +9,7 @@ const ApplicantSidebar = () => {
     { path: '/profile', icon: '👤', label: 'Profile' },
     { path: '/review', icon: '💼', label: 'Review' },
     { path: '/applied', icon: '📝', label: 'Applied' },
+    { path: '/filter', icon: '📝', label: 'filter jobs' },
     // { path: '/messages', icon: '💬', label: 'Messages' },
     // { path: '/discover', icon: '🔍', label: 'Discover' },
   ];

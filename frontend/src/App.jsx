@@ -15,6 +15,7 @@ import MyCreatedJobs from "./recruiter/MyCreatedJobs";
 import CreateJob from "./recruiter/CreateJob";
 import ApplicantSidebar from "./applicant/ApplicantSidebar"; // Ensure correct path
 import RecruiterSidebar from "./recruiter/RecruiterSidebar"; // Ensure correct path
+import FilterJobs from "./applicant/FilterJobs";
 import { UserContext } from "./context/UserContext";
 
 const AuthenticatedRoute = ({ children }) => {
@@ -68,6 +69,14 @@ const App = () => {
               element={
                 <AuthenticatedRoute>
                   <Myprofile />
+                </AuthenticatedRoute>
+              }
+            />
+            <Route
+              path="/filter"
+              element={
+                <AuthenticatedRoute>
+                  <FilterJobs />
                 </AuthenticatedRoute>
               }
             />
