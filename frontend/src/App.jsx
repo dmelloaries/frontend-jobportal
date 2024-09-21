@@ -17,6 +17,7 @@ import ApplicantSidebar from "./applicant/ApplicantSidebar"; // Ensure correct p
 import RecruiterSidebar from "./recruiter/RecruiterSidebar"; // Ensure correct path
 import FilterJobs from "./applicant/FilterJobs";
 import { UserContext } from "./context/UserContext";
+import JobSearch from "./applicant/JobSearch";
 
 const AuthenticatedRoute = ({ children }) => {
   const { user } = useContext(UserContext);
@@ -57,7 +58,7 @@ const App = () => {
         {user?.accountType === "Applicant" && (
           <>
             <Route
-              path="/"
+              path="/job"
               element={
                 <AuthenticatedRoute>
                   <Home />
@@ -65,7 +66,7 @@ const App = () => {
               }
             />
             <Route
-              path="/profile"
+              path="/"
               element={
                 <AuthenticatedRoute>
                   <Myprofile />
@@ -96,6 +97,17 @@ const App = () => {
                 </AuthenticatedRoute>
               }
             />
+            <Route
+              path="/JobSearch"
+              element={
+                <AuthenticatedRoute>
+                  <JobSearch/>
+                </AuthenticatedRoute>
+              }
+            />
+
+
+
           </>
         )}
 
